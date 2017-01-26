@@ -1,4 +1,4 @@
-#ANTLR IDE para compiladores 2
+#ANTLR IDE Para Compiladores 2
 
 Tomar como base el GUI proporcionado por Freddie. Tomar en cuenta la siguiente rubrica, y al finalizar un task marcarlo con X.
 
