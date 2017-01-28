@@ -5,9 +5,9 @@ Tomar como base el GUI proporcionado por Freddie. Tomar en cuenta la siguiente r
 ##Rúbrica
 
 1. Gramatica: 
-	- [ ] Precedencia de Operadores
-	- [ ] Resolución de conflictos
-	- [ ] Traducción(Transf?)
+	- [x] Precedencia de Operadores
+	- [x] Resolución de conflictos
+	- [x] Traducción(Transf?)
 2. Prueba Programa DECAF 
 	- [ ] Métodos
 	- [ ] Operaciones Secuencia
