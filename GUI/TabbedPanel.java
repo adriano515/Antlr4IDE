@@ -1,3 +1,5 @@
+package antlr4.GitAntlrIDE.GUI;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -23,8 +25,13 @@ class TabbedPanel extends JFrame {
 	private String currentFile = "Untitled";
 	private boolean changed = false;
 	JPanel treePanel = new JPanel();
+	JScrollPane scrollTreePanel = new JScrollPane(treePanel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 	public TabbedPanel(){
+		
+			add(scrollTreePanel,BorderLayout.CENTER);
+			scrollTreePanel.setVisible(true);
+			
 			//Grammar Editor
 			areaGrammar.setFont(new Font("Monospaced", Font.PLAIN, 12));
 			JScrollPane scrollGrammar = new JScrollPane(areaGrammar,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -70,6 +77,7 @@ class TabbedPanel extends JFrame {
 			tool.addSeparator();
 
 			JButton cut = tool.add(Cut), cop = tool.add(Copy), pas = tool.add(Paste);
+			JButton antlr = tool.add(text2Tree);
 			//Symbols to add
 			cut.setText(null); cut.setIcon(new ImageIcon("C:/Users/Freddie/workspace/antlr4/src/antlr4/Editor/cut.gif"));
 			cop.setText(null); cop.setIcon(new ImageIcon("C:/Users/Freddie/workspace/antlr4/src/antlr4/Editor/copy.gif"));
@@ -85,10 +93,12 @@ class TabbedPanel extends JFrame {
 			setVisible(true);
 
 			JTabbedPane tabbedPane = new JTabbedPane();
-			JMB.add(tabbedPane, BorderLayout.CENTER);
+			//JMB.add(tabbedPane, BorderLayout.CENTER);
+			Container contentPane = getContentPane();
+			contentPane.add(tabbedPane,BorderLayout.CENTER);
 			tabbedPane.addTab("Grammar Editor", scrollGrammar);
 			tabbedPane.addTab("Grammar Test", scrollTest);
-			tabbedPane.addTab("Antlr Tree", treePanel);
+			tabbedPane.addTab("Antlr Tree", scrollTreePanel);
 	}
 
 	private KeyListener k1 = new KeyAdapter() {
@@ -115,6 +125,12 @@ class TabbedPanel extends JFrame {
 				saveFile(currentFile);
 			else
 				saveFileAs();
+		}
+	};
+	
+	Action text2Tree = new AbstractAction("Test text"){
+		public void actionPerformed(ActionEvent e){
+			readToTree();
 		}
 	};
 
@@ -179,14 +195,15 @@ class TabbedPanel extends JFrame {
 
 	private void readToTree(){
 		//ANTLR Tree
-		ANTLRInputStream input = new ANTLRInputStream(areaTest.getText());
+	  ANTLRInputStream input = new ANTLRInputStream(areaTest.getText());
 	  HelloLexer lexer  = new HelloLexer(input);
 	  TokenStream tokenStream = new CommonTokenStream(lexer);
 	  HelloParser parser = new HelloParser(tokenStream);
-	  ParseTree tree = parser.r();
+	  ParseTree tree = parser.program();
 
 	  TreeViewer viewr = new TreeViewer(Arrays.asList(parser.getRuleNames()), tree);
-	  viewr.setScale(1.5); //scale a little
+	  //viewr.setScale(1.5); //scale a little
+	  viewr.setSize(700, 700);
 	  treePanel.add(viewr);
 	}
 }
