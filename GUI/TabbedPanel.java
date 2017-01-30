@@ -20,6 +20,7 @@ import org.antlr.v4.gui.TreeViewer;
 class TabbedPanel extends JFrame {
 	private JTextArea areaGrammar = new JTextArea(20,120);
 	private JTextArea areaTest = new JTextArea(20,120);
+	private JTextArea areaError = new JTextArea(20,120);
 	private JFileChooser dialog = new JFileChooser(System.getProperty("user.dir"));
 	private String currentFile = "Untitled";
 	private boolean changed = false;
@@ -42,6 +43,13 @@ class TabbedPanel extends JFrame {
 			JScrollPane scrollTest = new JScrollPane(areaTest,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 			add(scrollTest, BorderLayout.CENTER);
 			scrollTest.setVisible(true);
+
+			//Error Viewr
+			areaError.setFont(new Font("Monospaced", Font.PLAIN, 12));
+			areaError.setEditable(false);
+			JScrollPane scrollError = new JScrollPane(areaError,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+			add(scrollError, BorderLayout.CENTER);
+			scrollError.setVisible(true);
 
 			//Buttons
 
@@ -98,6 +106,7 @@ class TabbedPanel extends JFrame {
 			tabbedPane.addTab("Grammar Editor", scrollGrammar);
 			tabbedPane.addTab("Grammar Test", scrollTest);
 			tabbedPane.addTab("Antlr Tree", scrollTreePanel);
+			tabbedPane.addTab("Errors Tab", scrollError);
 	}
 
 	private KeyListener k1 = new KeyAdapter() {
@@ -195,14 +204,31 @@ class TabbedPanel extends JFrame {
 	private void readToTree(){
 		//ANTLR Tree
 	  ANTLRInputStream input = new ANTLRInputStream(areaTest.getText());
-	  HelloLexer lexer  = new HelloLexer(input);
-	  TokenStream tokenStream = new CommonTokenStream(lexer);
-	  HelloParser parser = new HelloParser(tokenStream);
-	  ParseTree tree = parser.program();
 
-	  TreeViewer viewr = new TreeViewer(Arrays.asList(parser.getRuleNames()), tree);
-	  //viewr.setScale(1.5); //scale a little
-	  viewr.setSize(700, 700);
-	  treePanel.add(viewr);
+	  HelloLexer lexer  = new HelloLexer(input);
+	  // Add custom error handdlers.
+      lexer.removeErrorListeners();
+      lexer.addErrorListener(ThrowingErrorListener.INSTANCE);
+
+	  TokenStream tokenStream = new CommonTokenStream(lexer);
+
+	  HelloParser parser = new HelloParser(tokenStream);
+	  // Add custom error handdlers.
+      parser.removeErrorListeners();
+      parser.addErrorListener(ThrowingErrorListener.INSTANCE);
+
+	  try {
+	  	ParseTree tree = parser.program();
+
+	  	TreeViewer viewr = new TreeViewer(Arrays.asList(parser.getRuleNames()), tree);
+	  	//viewr.setScale(1.5); //scale a little
+	  	viewr.setSize(700, 700);
+	  	treePanel.add(viewr);
+	  }
+      catch (Exception e) {
+      	System.out.println("Fuck...");
+      	//areaError.setText("OH SHIT WADUP!");
+        areaError.setText(e.getMessage());
+      }
 	}
 }
