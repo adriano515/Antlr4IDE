@@ -83,9 +83,10 @@ class TabbedPanel extends JFrame {
 			areaGrammar.addKeyListener(k1);
 			setTitle(currentFile);
 			setVisible(true);
-
+			
 			JTabbedPane tabbedPane = new JTabbedPane();
-			JMB.add(tabbedPane, BorderLayout.CENTER);
+			Container contentPane = getContentPane();
+			contentPane.add(tabbedPane, BorderLayout.CENTER);
 			tabbedPane.addTab("Grammar Editor", scrollGrammar);
 			tabbedPane.addTab("Grammar Test", scrollTest);
 			tabbedPane.addTab("Antlr Tree", treePanel);
