@@ -1,21 +1,25 @@
 
+import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
 
 import javax.swing.*;
 import javax.swing.text.*;
 
 import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import java.nio.file.*;
+import java.nio.charset.Charset;
+
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.gui.TreeViewer;
+import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.CommonTokenStream;
 
 class TabbedPanel extends JFrame {
 	private JTextArea areaGrammar = new JTextArea(20,120);
@@ -24,6 +28,8 @@ class TabbedPanel extends JFrame {
 	private JFileChooser dialog = new JFileChooser(System.getProperty("user.dir"));
 	private String currentFile = "Untitled";
 	private boolean changed = false;
+	private Path file = Paths.get("ErrorLog_Syntax.log");
+	private List<String> Errors;
 	JPanel treePanel = new JPanel();
 	JScrollPane scrollTreePanel = new JScrollPane(treePanel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
@@ -217,18 +223,25 @@ class TabbedPanel extends JFrame {
       parser.removeErrorListeners();
       parser.addErrorListener(ThrowingErrorListener.INSTANCE);
 
-	  try {
-	  	ParseTree tree = parser.program();
+	  ParseTree tree = parser.program();
 
-	  	TreeViewer viewr = new TreeViewer(Arrays.asList(parser.getRuleNames()), tree);
-	  	//viewr.setScale(1.5); //scale a little
-	  	viewr.setSize(700, 700);
-	  	treePanel.add(viewr);
+	  TreeViewer viewr = new TreeViewer(Arrays.asList(parser.getRuleNames()), tree);
+	  //viewr.setScale(1.5); //scale a little
+	  viewr.setSize(700, 700);
+	  treePanel.add(viewr);
+
+	  // Readn and write errors.
+	  try {
+	  	Errors = Files.readAllLines(file, Charset.forName("UTF-8"));
+	  	Files.deleteIfExists(file);
+	  	System.out.println(Errors);
+	  	for (int i = 0; i < Errors.size(); i++) {
+	  		areaError.append("(" + (i + 1) + "): " + Errors.get(i) + "\n");
+	  	}
 	  }
-      catch (Exception e) {
-      	System.out.println("Fuck...");
-      	//areaError.setText("OH SHIT WADUP!");
-        areaError.setText(e.getMessage());
-      }
+	  catch ( IOException e ) {
+	  	areaError.setText("-- Compiled without errors -- ");
+	  }
+
 	}
 }
