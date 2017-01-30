@@ -1,4 +1,3 @@
-package antlr4.GitAntlrIDE.GUI;
 
 import java.awt.*;
 import java.awt.event.*;

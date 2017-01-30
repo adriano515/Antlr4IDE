@@ -1,4 +1,4 @@
-package antlr4.GitAntlrIDE.GUI;
+
 // Generated from Hello.g4 by ANTLR 4.5.3
 
 import org.antlr.v4.runtime.ParserRuleContext;
